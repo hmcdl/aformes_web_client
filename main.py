@@ -9,19 +9,34 @@ from operations import operations
 
 
 if __name__ == "__main__":
+    arg_lines = []
+    if sys.argv[1] != "--connect-to":
+        with open(sys.argv[1], 'r') as f:
+            arg_lines = f.readlines()
+            connect_args = shlex.split(arg_lines.pop(0))
+    else:
+        connect_args = sys.argv[1:]
+    args = parsers.parse_args(parser=parsers.parser_auth, 
+                                      inp=connect_args)
     session_data = {}
-    args = parsers.parser.parse_args()
+    # args = parsers.parser.parse_args()
     session_data["token"] = operations.authorise(args.connect_to, username=args.username, password=args.password)
     session_data["address"] = args.connect_to
     # s = "--show-my-sims --limit 100 --offset 0"
     while True:
         # inp = "--show-my-sims --limit 100 --offset 0"
-        inp = input('$: ')
+        if len(arg_lines) != 0:
+            inp = arg_lines.pop(0)
+        else:
+            inp = input('$: ')
 
         # args_list = sys.argv[1:]
         
         # print(shlex.split(inp))
         inp = shlex.split(inp)
+
+        if len(inp) == 0:
+            continue
             # print(session_data["token"])
         if inp[0] == "show-my-sims":
             args = parsers.parse_args(parser=parsers.parser_show_my_sims, 

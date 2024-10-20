@@ -45,7 +45,7 @@ def start_simulation(title: str, session_data: dict):
     conver_args = {"iters": 1, "simulation": 0, "aeroratio": 1.5}
     ip = requests.get(url=session_data["address"] + "/simulations/ip_echo").json()['ip']
     try:
-        subprocess.Popen(f'python ./app/listening_log_socket.py {ip}', creationflags=subprocess.CREATE_NEW_CONSOLE)
+        subprocess.Popen(f'python ./app/interface/listening_log_socket.py {ip}', creationflags=subprocess.CREATE_NEW_CONSOLE)
     except:
         print( "error with listening_log_socket")
     r = requests.post(url=url, params={"title": title}, json=conver_args, headers={"Authorization": f"Bearer {token}"})

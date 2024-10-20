@@ -1,10 +1,10 @@
 import argparse
-parser = argparse.ArgumentParser(prog='simulations_web console',
+parser_auth = argparse.ArgumentParser(prog='simulations_web console',
                     description='What the program does',
                     epilog='Levchenkov Mikhail, mihalevch@mail.ru')
-parser.add_argument('--connect-to', type=str)
-parser.add_argument('--username', type=str)
-parser.add_argument('--password', type=str)
+parser_auth.add_argument('--connect-to', type=str)
+parser_auth.add_argument('--username', type=str)
+parser_auth.add_argument('--password', type=str)
 
 parser_add_simulation =  argparse.ArgumentParser(prog='add-simulation',
                     description='This is interactive command for adding new simulation to the DB',
