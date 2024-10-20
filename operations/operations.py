@@ -1,3 +1,4 @@
+from pathlib import Path
 import requests
 import json
 import os 
@@ -17,17 +18,23 @@ def show_my_sims(limit: int, offset: int, session_data: dict):
     r = requests.get(url=session_data["address"] + '/simulations/show_my_sims', data=data, headers=headers)
     return r.json()
 
-def add_simulation(conver_args_string : str, title : str, filename : str, session_data: dict):
+def add_simulation(title : str, mdl : str,
+                   aeromanual: str, from_interface: str, 
+                   control_system: str, session_data: dict):
     token = session_data["token"]
     headers = {"Authorization": f"Bearer {token}"}
     try:
         request_body = {
-            'mdl': ("", open(filename, 'rb')),
+            'mdl': ("", open(mdl, 'rb')),
+            'aeromanual': ("", open(aeromanual, 'rb')),
+            'from_interface': ("", open(from_interface, 'rb')),
+            'control_system': ("", open(control_system, 'rb')),
+            
         }
     except FileNotFoundError as e:
         print(e)
         return None
-    params = {'conver_args_string': conver_args_string, "title": title}
+    params = {"title": title}
     url = session_data["address"] + "/simulations/add_simulation"
     r = requests.post(url=url, files=request_body, headers=headers, params=params)
     return r.json()
@@ -39,13 +46,14 @@ def remove_sim(title: str, session_data: dict):
     r = requests.post(url=url, params={"title": title}, headers=headers)
     return r.json()
 
-def start_simulation(title: str, session_data: dict):
+def start_simulation(title: str, session_data: dict, iters, simulation, aeroratio):
     token = session_data["token"]
     url = session_data["address"] + "/simulations/start_simulation"
-    conver_args = {"iters": 1, "simulation": 0, "aeroratio": 1.5}
+    conver_args = {"iters": iters, "simulation": simulation, "aeroratio": aeroratio}
     ip = requests.get(url=session_data["address"] + "/simulations/ip_echo").json()['ip']
     try:
-        subprocess.Popen(f'python ./app/interface/listening_log_socket.py {ip}', creationflags=subprocess.CREATE_NEW_CONSOLE)
+        log_socket_abs_path = os.path.abspath(os.path.join(Path(__file__).parent, "listening_log_socket.py") )
+        subprocess.Popen(f'python {log_socket_abs_path} {ip}', creationflags=subprocess.CREATE_NEW_CONSOLE)
     except:
         print( "error with listening_log_socket")
     r = requests.post(url=url, params={"title": title}, json=conver_args, headers={"Authorization": f"Bearer {token}"})
@@ -60,7 +68,7 @@ def download_sim(title: str, local_dir: str,  session_data: dict):
     print(r.headers)
     with open(os.path.join(local_dir, title + '.zip'), "wb") as f:
         f.write(r.content)
-    a = 0
+    return {"status" : "success"}
 
 def bar(session_data):
     token = session_data["token"]

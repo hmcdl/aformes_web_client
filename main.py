@@ -50,9 +50,11 @@ if __name__ == "__main__":
             if args == None:
                 continue
             result = operations.add_simulation(
-                conver_args_string=args.conver_args_string,
                 title=args.title, 
-                filename=args.filename,
+                mdl=args.mdl,
+                from_interface=args.from_interface,
+                control_system=args.control_system,
+                aeromanual=args.aeromanual,
                 session_data=session_data)
             print(json.dumps(result, indent=2))
         elif inp[0] == "remove-sim":
@@ -68,7 +70,21 @@ if __name__ == "__main__":
             if args == None:
                 continue
             result = operations.start_simulation(
-                title=args.title, session_data=session_data)
+                title=args.title, 
+                iters=args.iters,
+                simulation=args.simulation,
+                aeroratio=args.aeroratio,
+                session_data=session_data)
+            print(json.dumps(result, indent=2))
+        elif inp[0] == "download-sim":
+            args = parsers.parse_args(parser=parsers.parser_download_sim, 
+                                      inp=inp)
+            if args == None:
+                continue
+            result = operations.download_sim(
+                title=args.title, 
+                local_dir=args.dir,
+                session_data=session_data)
             print(json.dumps(result, indent=2))
         else:
             print('unknown argument options')
